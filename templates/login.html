@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | WanderSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Load Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="auth-body">
+    <div class="auth-bg"></div>
+    <div class="auth-container glass-card dark-aesthetic">
+        <h2 class="auth-title">Welcome to WanderSync!</h2>
+        <p class="auth-subtitle">Log in or register to plan your next journey.</p>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-login" onclick="switchAuthTab('login')">Log In</button>
+            <button class="tab-btn" id="tab-register" onclick="switchAuthTab('register')">Register</button>
+        </div>
+
+        <form id="auth-form" onsubmit="handleAuth(event)">
+            <div class="input-group hidden" id="name-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" placeholder="John Doe">
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required placeholder="you@example.com">
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+
+            <div class="input-group hidden" id="confirm-pwd-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full mt-2" id="auth-submit-btn">Continue</button>
+
+            <div class="divider">
+                <span>or</span>
+            </div>
+
+            <a href="/api/auth/google/login" class="btn btn-secondary btn-full google-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo"
+                    class="google-icon">
+                Sign in with Google
+            </a>
+
+            <div style="width: 100%;">
+                <p id="auth-error" class="error-text hidden mt-2"></p>
+                <p id="auth-success" class="success-text hidden mt-2"></p>
+            </div>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+
+</html>

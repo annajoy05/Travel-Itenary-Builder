@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WanderSync Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="dashboard-body">
+    <div class="dashboard-bg"></div>
+    <nav class="navbar dashboard-nav mockup-nav">
+        <div class="logo">WanderSync.</div>
+        <div class="nav-actions mockup-nav-pill">
+            <span class="user-icon">👤</span>
+            <span class="time-display" id="mockup-time">03:29</span>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <!-- Welcome Section -->
+        <section class="welcome-section" id="welcome-section">
+            <div class="mockup-main-glass">
+                <div class="mockup-header-area">
+                    <h1 class="mockup-title">Welcome, <span class="mockup-name">{{ user['full_name'] }}</span>! <span class="mockup-avatar">👤</span></h1>
+                    <p class="mockup-subtitle">What would you like to do today?</p>
+                </div>
+
+                <div class="action-grid mockup-grid">
+                    <div class="action-card mockup-inner-glass" onclick="showSection('planner-section')" style="cursor: pointer;">
+                        <div class="mockup-card-header">
+                            <div class="mockup-icon">🗓️</div>
+                            <div class="mockup-badge">AI</div>
+                        </div>
+                        <h3>Plan a New Trip</h3>
+                        <p>Use our AI engine to generate an optimized itinerary based on your budget and style.</p>
+                    </div>
+
+                    <div class="action-card mockup-inner-glass" onclick="showSection('experience-section')" style="cursor: pointer;">
+                        <div class="mockup-card-header">
+                            <div class="mockup-icon">📸</div>
+                            <div class="mockup-badge">👥</div>
+                        </div>
+                        <h3>Register Past Trip</h3>
+                        <p>Record your visited places and help the community by sharing ratings and costs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Planner Section -->
+        <section class="planner-section glass-card hidden" id="planner-section">
+            <button class="btn btn-secondary mb-4" onclick="showSection('welcome-section')">← Back to Dashboard</button>
+            <h2>Plan a New Trip</h2>
+            <p class="subtitle">Tell us where you're going and what your constraints are.</p>
+
+            <form id="generate-form" onsubmit="generateItinerary(event)">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="destination">Destination</label>
+                        <input type="text" id="destination" required placeholder="e.g. Munnar, Kerala">
+                    </div>
+                    <div class="input-group">
+                        <label for="budget">Total Budget (₹)</label>
+                        <input type="number" id="budget" required min="1000" placeholder="5000">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="duration">Trip Duration (Days)</label>
+                        <input type="number" id="duration" required min="1" max="14" placeholder="e.g. 2">
+                    </div>
+                    <div class="input-group">
+                        <label for="transport">Travel Method</label>
+                        <select id="transport" required>
+                            <option value="bus">Bus</option>
+                            <option value="train">Train</option>
+                            <option value="car">Car</option>
+                            <option value="flight">Flight</option>
+                            <option value="mixed">Mixed</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="style">Travel Style</label>
+                        <select id="style" required>
+                            <option value="relaxed">Relaxed</option>
+                            <option value="moderate" selected>Moderate</option>
+                            <option value="intensive">Intensive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group" style="flex-basis: 100%;">
+                        <label>What are your preferences/interests? (Optional)</label>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;" id="preferences-options">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" value="nature"> Nature & Outdoors</label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" value="history"> History & Culture</label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" value="food"> Food & Dining</label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" value="adventure"> Adventure</label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;"><input type="checkbox" value="shopping"> Shopping</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full generate-btn" id="generate-btn">
+                    <span class="btn-text">Generate AI Itinerary</span>
+                    <div class="loader-spinner hidden" id="generate-loader"></div>
+                </button>
+            </form>
+        </section>
+
+        <!-- Loading State View -->
+        <section class="loading-state hidden" id="loading-state">
+            <div class="pulse-ring"></div>
+            <h3>Generating Optimal Route</h3>
+            <ul class="loading-steps">
+                <li class="active">Aggregating Community Data...</li>
+                <li>MCTS Exploring Attractions...</li>
+                <li>LKH Optimizing Travel Path...</li>
+                <li>Verifying Time & Cost Constraints...</li>
+            </ul>
+        </section>
+
+        <!-- Itinerary Results View -->
+        <section class="results-section hidden" id="results-section">
+            <div class="results-header">
+                <h2>Your Optimal Route</h2>
+                <div class="budget-badge">
+                    <span class="label">Total Cost</span>
+                    <span class="value" id="result-cost">₹0</span>
+                </div>
+            </div>
+
+            <div class="timeline" id="itinerary-timeline">
+                <!-- Javascript will inject the timeline nodes here -->
+            </div>
+
+            <div class="community-feedback glass-card mockup-card mt-4">
+                <h3>Trip Completed?</h3>
+                <p>Contribute back to the community by logging your experience.</p>
+                <button class="btn btn-secondary mt-2">Log Community Data</button>
+            </div>
+
+        </section>
+
+        <!-- Past Trip Experience Section -->
+        <section class="experience-section glass-card hidden" id="experience-section">
+            <button class="btn btn-secondary mb-4" onclick="showSection('welcome-section')">← Back to Dashboard</button>
+            <h2>Register Past Trip Experience</h2>
+            <p class="subtitle">Log your personal travel data to build the community database.</p>
+
+            <form id="experience-form" onsubmit="handleExperienceSubmit(event)">
+
+                <!-- 1. Trip Information -->
+                <div class="glass-card mockup-card"
+                    style="max-width: 100%; margin-bottom: 2rem; transform: none; box-shadow: none;">
+                    <h3>1. Trip Information</h3>
+                    <div class="form-row mt-2">
+                        <div class="input-group">
+                            <label for="exp_dest">Main Destination</label>
+                            <input type="text" id="exp_dest" required placeholder="e.g. Munnar">
+                        </div>
+                        <div class="input-group">
+                            <label for="exp_date">Trip Date</label>
+                            <input type="date" id="exp_date">
+                        </div>
+                        <div class="input-group">
+                            <label for="exp_companion">Companion Type (Optional)</label>
+                            <select id="exp_companion">
+                                <option value="solo">Solo</option>
+                                <option value="friends">Friends</option>
+                                <option value="family">Family</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="exp_stay_name">Stay Name (Optional)</label>
+                            <input type="text" id="exp_stay_name" placeholder="e.g. Green Valley Hotel">
+                        </div>
+                        <div class="input-group">
+                            <label for="exp_stay_price">Stay Price (Total ₹)</label>
+                            <input type="number" id="exp_stay_price" placeholder="e.g. 1500" value="0"
+                                oninput="calculateTotalExpense()">
+                        </div>
+                        <div class="input-group">
+                            <label for="exp_stay_rating">Stay Rating (1-5)</label>
+                            <input type="number" id="exp_stay_rating" min="1" max="5" step="0.1" placeholder="e.g. 4.5">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Places Visited (Dynamic Container) -->
+                <h3>2. Places Visited</h3>
+                <p class="subtitle">Log your path in chronological order. Tell us how you traveled between them.</p>
+
+                <div id="places-container">
+                    <!-- Javascript will inject the initial Place 1 node here -->
+                </div>
+
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <button type="button" class="btn btn-secondary" onclick="addNextPlace()">+ Add Next Place</button>
+                </div>
+
+                <!-- 4. Expense Calculation -->
+                <div class="glass-card mockup-card"
+                    style="max-width: 100%; margin-bottom: 2rem; transform: none; box-shadow: none; display: flex; justify-content: space-between; align-items: center; border-color: var(--brand-primary);">
+                    <div>
+                        <h3>Trip Calculation</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Auto-updating based on your entries.
+                        </p>
+                    </div>
+                    <div class="budget-badge" style="background: transparent; border: none;">
+                        <span class="label">Total Expense</span>
+                        <span class="value" id="calc-expense-display" style="font-size: 2rem;">₹0</span>
+                    </div>
+                </div>
+
+                <!-- 5. Final Submission -->
+                <button type="submit" class="btn btn-primary btn-full generate-btn" id="exp-submit-btn">
+                    <span class="btn-text">Submit Trip</span>
+                    <div class="loader-spinner hidden" id="exp-loader"></div>
+                </button>
+            </form>
+        </section>
+
+        <!-- Experience Results View -->
+        <section class="experience-results-section hidden" id="experience-results-section" style="padding: 2.5rem;">
+            <div class="results-header">
+                <h2 id="exp-result-dest">Your Submitted Trip</h2>
+                <div class="budget-badge">
+                    <span class="label">Total Trip Expense</span>
+                    <span class="value" id="exp-result-cost">₹0</span>
+                </div>
+            </div>
+
+            <div class="timeline" id="experience-timeline">
+                <!-- Javascript will inject the timeline nodes here -->
+            </div>
+
+            <button class="btn btn-secondary mt-4" onclick="showSection('welcome-section')">← Back to Dashboard</button>
+        </section>
+
+        <!-- My Trips Section -->
+        <section class="my-trips-section glass-card hidden" id="my-trips-section">
+            <button class="btn btn-secondary mb-4" onclick="showSection('welcome-section')">← Back to Dashboard</button>
+            <h2>My Trips</h2>
+            <p class="subtitle">View your previously generated and saved itineraries.</p>
+            <div id="past-trips-list">
+                <p style="color: var(--text-secondary); text-align: center; margin-top: 2rem;">No past trips found.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+
+</html>

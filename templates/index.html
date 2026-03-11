@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WanderSync | Intelligent Itinerary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Load Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="landing-body">
+    <nav class="navbar" style="justify-content: flex-end;">
+        <div class="logo"></div>
+        <div class="nav-links">
+            <a href="/login" class="btn btn-secondary">Log In</a>
+            <a href="/login" class="btn btn-primary">Start Planning</a>
+        </div>
+    </nav>
+
+    <header class="hero" style="justify-content: center; text-align: center; flex-direction: column;">
+        <div class="hero-content" style="max-width: 800px; display: flex; flex-direction: column; align-items: center;">
+            <div class="aesthetic-3d-wrapper">
+                <h1 class="hero-title" style="font-size: 4rem; margin-bottom: 0.5rem; text-shadow: 0 4px 12px rgba(0,0,0,0.3);">WanderSync.</h1>
+                <h2 style="font-size: 1.25rem; font-weight: 500; margin-bottom: 2rem; color: #ffffff; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">Experience the world optimized perfectly for you.</h2>
+                <div style="display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap;">
+                    <a href="/login" class="btn btn-white btn-large" style="padding: 1rem 3rem; font-size: 1.25rem;">Register or Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+
+</html>
